@@ -1,0 +1,107 @@
+name: Android CI
+
+env:
+  # The name of the main module repository
+  main_project_module: app
+
+permissions: {}
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - name: set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: 17
+        distribution: 'corretto'
+        cache: 'gradle'
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    # Build Github Debug APKs
+    - name: Build debug apk github variant
+      run: ./gradlew assembleGithubDebug --warning-mode all
+
+    - name: Upload Github Debug arm64
+      uses: actions/upload-artifact@v4
+      with:
+        name: ytdlnis-debug-arm64-v8a-github
+        path: ${{ env.main_project_module }}/build/outputs/apk/github/debug/*arm64*.apk
+
+    - name: Upload Github Debug armeabi-v7a
+      uses: actions/upload-artifact@v4
+      with:
+        name: ytdlnis-debug-armeabi-v7a-github
+        path: ${{ env.main_project_module }}/build/outputs/apk/github/debug/*armeabi*.apk
+
+    - name: Upload Github Debug universal
+      uses: actions/upload-artifact@v4
+      with:
+        name: ytdlnis-debug-universal-github
+        path: ${{ env.main_project_module }}/build/outputs/apk/github/debug/*universal*.apk
+
+    - name: Upload Github Debug x86
+      uses: actions/upload-artifact@v4
+      with:
+        name: ytdlnis-debug-x86-github
+        path: ${{ env.main_project_module }}/build/outputs/apk/github/debug/*x86*.apk
+
+    - name: Upload Github Debug x86_64
+      uses: actions/upload-artifact@v4
+      with:
+        name: ytdlnis-debug-x86_64-github
+        path: ${{ env.main_project_module }}/build/outputs/apk/github/debug/*x86_64*.apk
+
+    # Build FOSS Debug APKs
+    - name: Build debug apk foss variant
+      run: ./gradlew assembleFossDebug --warning-mode all
+
+    - name: Upload FOSS Debug arm64
+      uses: actions/upload-artifact@v4
+      with:
+        name: ytdlnis-debug-arm64-v8a-foss
+        path: ${{ env.main_project_module }}/build/outputs/apk/foss/debug/*arm64*.apk
+
+    - name: Upload FOSS Debug armeabi-v7a
+      uses: actions/upload-artifact@v4
+      with:
+        name: ytdlnis-debug-armeabi-v7a-foss
+        path: ${{ env.main_project_module }}/build/outputs/apk/foss/debug/*armeabi*.apk
+
+    - name: Upload FOSS Debug universal
+      uses: actions/upload-artifact@v4
+      with:
+        name: ytdlnis-debug-universal-foss
+        path: ${{ env.main_project_module }}/build/outputs/apk/foss/debug/*universal*.apk
+
+    - name: Upload FOSS Debug x86
+      uses: actions/upload-artifact@v4
+      with:
+        name: ytdlnis-debug-x86-foss
+        path: ${{ env.main_project_module }}/build/outputs/apk/foss/debug/*x86*.apk
+
+    - name: Upload FOSS Debug x86_64
+      uses: actions/upload-artifact@v4
+      with:
+        name: ytdlnis-debug-x86_64-foss
+        path: ${{ env.main_project_module }}/build/outputs/apk/foss/debug/*x86_64*.apk
+
+    - name: Upload All Debug APKs
+      uses: actions/upload-artifact@v4
+      with:
+        name: all-debug-apks
+        path: |
+          ${{ env.main_project_module }}/build/outputs/apk/github/debug/
+          ${{ env.main_project_module }}/build/outputs/apk/foss/debug/
